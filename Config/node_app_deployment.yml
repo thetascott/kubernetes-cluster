@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-app
+  labels:
+    app: node-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: node-app
+  template:
+    metadata:
+      labels:
+        app: node-app
+    spec:
+      containers:
+        - name: node-app
+          image: node-app:latest  # Using the locally built image
+          imagePullPolicy: Never  # Prevents Kubernetes from trying to pull from Docker Hub
+          ports:
+            - containerPort: 3000
+          env:
+            - name: DB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: node-app-app
+                  key: uri
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-app-service
+spec:
+  type: NodePort  
+  selector:
+    app: node-app
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+      nodePort: 30007

@@ -1,0 +1,10 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: node-app
+  namespace: default
+spec:
+  instances: 2
+
+  storage:
+    size: 1Gi
