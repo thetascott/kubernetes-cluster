@@ -1,0 +1,66 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: node-app-alerts
+  labels:
+    release: prometheus  # Make sure this matches your Prometheus deployment
+spec:
+  groups:
+    - name: node-app.rules
+      rules:
+        - alert: ServiceDown
+          expr: sum(rate(http_requests_total[5m])) == 0
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Service Down"
+            description: "No incoming HTTP requests in the last 5 minutes. Possible outage."
+        - alert: HighHttp5xxErrors
+          expr: (sum(rate(http_requests_total{status_code=~"5.."}[5m])) / sum(rate(http_requests_total[5m]))) > 0.05
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High HTTP 5xx Errors"
+            description: "More than 5% of HTTP requests are failing with 5xx errors."
+        - alert: HighRequestLatency
+          expr: (sum(rate(http_request_duration_seconds_sum[1m])) / sum(rate(http_request_duration_seconds_count[1m]))) > 0.5
+          for: 1m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High Request Latency"
+            description: "The average request duration is above 500ms for more than 1 minute."
+        - alert: HighHttpRequestRate
+          expr: rate(http_requests_total[5m]) > 10 * avg_over_time(increase(http_requests_total[1h])[1h:])
+          for: 2m
+          labels:
+            severity: critical
+          annotations:
+            summary: "High HTTP Request Rate"
+            description: "HTTP request rate has increased significantly. Possible DDoS attack."
+        - alert: HighCpuUsage
+          expr: (sum(rate(container_cpu_usage_seconds_total[1m])) by (pod) / sum(kube_pod_container_resource_limits{resource="cpu"})) > 0.8
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High CPU Usage"
+            description: "Pod CPU usage is above 80% for more than 2 minutes."
+        - alert: HighMemoryUsage
+          expr: (sum(container_memory_usage_bytes) by (pod) / sum(kube_pod_container_resource_limits{resource="memory"})) > 0.9
+          for: 2m
+          labels:
+            severity: critical
+          annotations:
+            summary: "High Memory Usage"
+            description: "Pod is using more than 90% of its allocated memory."
+        - alert: LowDiskSpace
+          expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) < 0.1
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Low Disk Space"
+            description: "Available disk space is below 10%. Possible risk of outage."
