@@ -2,8 +2,7 @@
 
 This project sets up a home lab environment for options pricing and volatility analysis, leveraging Kubernetes for scalability and monitoring tools for system observability.
 
-**Technology Stack**
-
+**Technology Stack**  
 This project utilizes the following tools and services:
 - Minikube – Local Kubernetes cluster for development and testing
 - CloudNativePG – PostgreSQL operator for database management
@@ -14,9 +13,9 @@ This project utilizes the following tools and services:
 ## Deployment Overview
 This Kubernetes cluster runs the following components:
 
-✅ Node.js Pods – Handle options pricing and volatility analysis
-✅ PostgreSQL Database – Managed by CloudNativePG for data persistence
-✅ Monitoring Stack – Prometheus collects metrics and triggers alerts, while Grafana visualizes system performance  
+✅ Node.js Pods – Handle options pricing and volatility analysis  
+✅ PostgreSQL Database – Managed by CloudNativePG for data persistence  
+✅ Monitoring Stack – Prometheus collects metrics and triggers alerts, while Grafana visualizes system performance    
 <img width="1116" alt="Infrastructure" src="https://github.com/user-attachments/assets/6e36210f-56e2-48bb-930b-5a4557ce4be5" />
 
 ## Prometheus Alerts
